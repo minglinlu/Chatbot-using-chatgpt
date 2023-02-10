@@ -5,6 +5,7 @@ import json
 import string
 import re
 import sys
+import uuid
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -28,7 +29,8 @@ def get_bot_response():
     global conversation_id, parent_id
     userText = request.args.get('msg')
     # 这里是你要讲的话
-    params = json.dumps({"action": "next", "messages": [{"id": "32fc3e54-4357-4281-bfa4-3b043820c764", "role": "user",
+    number_based_uuid = uuid.uuid1()
+    params = json.dumps({"action": "next", "messages": [{"id": str(number_based_uuid), "role": "user",
                                                          "content": {"content_type": "text", "parts": [userText]}}],
                          "parent_message_id": "", "model": "text-davinci-002-render-paid"})
     print(params)
