@@ -5,5 +5,4 @@ It is a Python project that that generates automated responses to a user’s inp
 
 ## Implementation
 
-python app.py
-```# Chatbot-using-chatgpt
+nohup python3 -m flask run --host=0.0.0.0 > out.txt 2>&1 &
