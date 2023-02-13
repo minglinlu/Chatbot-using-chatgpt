@@ -9,6 +9,7 @@ import uuid
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
+map_session = dict()
 conversation_id = None
 parent_id = None
 # 不需要SSL验证
@@ -26,11 +27,20 @@ def home():
 
 @app.route("/get")
 def get_bot_response():
-    global conversation_id, parent_id
+    global map_session, conversation_id, parent_id
+    SessionId = request.args.get('sid')
+    ParentId = request.args.get('pid')
     userText = request.args.get('msg')
+    print(SessionId)
     # 这里是你要讲的话
     number_based_uuid = uuid.uuid1()
-    params = json.dumps({"action": "next", "messages": [{"id": str(number_based_uuid), "role": "user",
+    if (SessionId in map_session):
+        print("sessionid:", map_session[SessionId])
+        params = json.dumps({"action": "next", "messages": [{"id": str(number_based_uuid), "role": "user",
+                                                         "content": {"content_type": "text", "parts": [userText]}}],
+                         "parent_message_id": ParentId, "conversation_id": map_session[SessionId], "model": "text-davinci-002-render-paid"})
+    else:
+        params = json.dumps({"action": "next", "messages": [{"id": str(number_based_uuid), "role": "user",
                                                          "content": {"content_type": "text", "parts": [userText]}}],
                          "parent_message_id": "", "model": "text-davinci-002-render-paid"})
     print(params)
@@ -62,11 +72,14 @@ def get_bot_response():
     response = dict()
     if (len(parsed_json["message"]["content"]["parts"]) > 0):
         response["answer"] = parsed_json["message"]["content"]["parts"][0]
+        response["conversation_id"] = parsed_json["conversation_id"]
+        response["parent_id"] = parsed_json["message"]["id"]
+        map_session[SessionId] = response["conversation_id"]
     else:
         response["answer"] = "??????"
 
     print("response:", response)
-    return str(response["answer"])
+    return str(response).replace("'", "\"")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
