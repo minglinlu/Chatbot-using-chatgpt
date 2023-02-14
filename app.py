@@ -25,12 +25,12 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/get")
+@app.route("/get", methods=['POST'])
 def get_bot_response():
     global map_session, conversation_id, parent_id
-    SessionId = request.args.get('sid')
-    ParentId = request.args.get('pid')
-    userText = request.args.get('msg')
+    SessionId = request.form.get('sid')
+    ParentId = request.form.get('pid')
+    userText = request.form.get('msg')
     print(SessionId)
     # 这里是你要讲的话
     number_based_uuid = uuid.uuid1()
