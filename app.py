@@ -25,7 +25,7 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/get", methods=['POST'])
+@app.route("/sendmsg", methods=['POST'])
 def get_bot_response():
     global map_session, conversation_id, parent_id
     SessionId = request.form.get('sid')
